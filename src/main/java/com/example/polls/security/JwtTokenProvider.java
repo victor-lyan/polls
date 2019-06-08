@@ -16,6 +16,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
+/**
+ * This class validates tokens, retrieves userId from them and generates new tokens
+ */
 @Component
 public class JwtTokenProvider {
     

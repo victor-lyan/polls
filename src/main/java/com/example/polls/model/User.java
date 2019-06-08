@@ -1,5 +1,7 @@
 package com.example.polls.model;
 
+import com.example.polls.model.audit.DateAudit;
+
 import org.hibernate.annotations.NaturalId;
 
 import java.util.HashSet;
@@ -29,7 +31,7 @@ import lombok.NoArgsConstructor;
 })
 @NoArgsConstructor
 @Data
-public class User {
+public class User extends DateAudit {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

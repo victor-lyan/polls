@@ -2,6 +2,7 @@ package com.example.polls.config;
 
 import com.example.polls.security.CustomUserDetailsService;
 import com.example.polls.security.JwtAuthenticationEntryPoint;
+import com.example.polls.security.JwtAuthenticationFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,13 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter();
     }
     
-    @Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-            .userDetailsService(customUserDetailsService)
-            .passwordEncoder(passwordEncoder());
-    }
-    
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -55,6 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+            .userDetailsService(customUserDetailsService)
+            .passwordEncoder(passwordEncoder());
     }
     
     @Override
@@ -70,8 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-            .authorizeRequest()
-                .antMathers("/",
+            .authorizeRequests()
+                .antMatchers("/",
                     "/favicon.ico",
                     "/**/*.png",
                     "/**/*.gif",

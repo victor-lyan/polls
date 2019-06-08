@@ -2,7 +2,6 @@ package com.example.polls.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,15 +15,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
+/**
+ * This filter runs before every request and it checks for valid jwt, also retrieves user information
+ * from the db and sets it to the security context holder, so we can use it in our code further.
+ */
+@NoArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
-    private final JwtTokenProvider tokenProvider;
-    private final CustomUserDetailsService customUserDetailsService;
+    private JwtTokenProvider tokenProvider;
+    private CustomUserDetailsService customUserDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    
+
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, CustomUserDetailsService customUserDetailsService) {
+        this.tokenProvider = tokenProvider;
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
     @Override
     protected void doFilterInternal(
         HttpServletRequest httpServletRequest,
@@ -32,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         try {
+            // retrieve jwt token from the request header
             String jwt = getJwtFromRequest(httpServletRequest);
             
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
